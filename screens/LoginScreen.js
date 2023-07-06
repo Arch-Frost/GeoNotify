@@ -15,7 +15,7 @@ const LoginScreen = ({ navigation }) => {
     // Handle Google login
   };
 
-  const handleSignUp = () => {
+  const signupLink = () => {
     navigation.navigate('SignUp');
   };
 
@@ -45,7 +45,7 @@ const LoginScreen = ({ navigation }) => {
         <FontAwesome name="google" size={24} color="white" />
         <Text style={styles.googleButtonText}>Login with Google</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.signupLink} onPress={handleSignUp}>
+      <TouchableOpacity style={styles.signupLink} onPress={signupLink}>
         <Text style={styles.signupLinkText}>Don't have an account? Sign Up</Text>
       </TouchableOpacity>
     </View>

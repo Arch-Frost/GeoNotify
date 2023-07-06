@@ -1,13 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import SignUpScreen from './screens/SignUpScreen';
-import LoginScreen from './screens/LoginScreen';
+
+
+import TaskDetailsScreen from './screens/TaskDetailsScreen';
 
 export default function App() {
   return (
     <>
-    <SignUpScreen />
-    {/* <LoginScreen /> */}
+      <TaskDetailsScreen />
     </>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    // backgroundColor: '#D3D3D3', // Light Gray
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
+})

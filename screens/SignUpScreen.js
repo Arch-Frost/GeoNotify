@@ -1,9 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image } from 'react-native';
 
-const SignUpScreen = () => {
+const SignUpScreen = ({ navigation }) => {
   const handleSignUp = () => {
     // Handle sign up process
+  };
+
+  const loginLink = () => {
+    navigation.navigate('Login');
   };
 
   return (
@@ -29,7 +33,7 @@ const SignUpScreen = () => {
       <TouchableOpacity style={styles.button} onPress={handleSignUp}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.loginLink}>
+      <TouchableOpacity style={styles.loginLink} onPress={loginLink}>
         <Text style={styles.loginLinkText}>Already have an account? Login</Text>
       </TouchableOpacity>
     </View>
