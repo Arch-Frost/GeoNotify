@@ -3,11 +3,13 @@ import { StyleSheet, Text, View } from 'react-native';
 
 
 import TaskDetailsScreen from './screens/TaskDetailsScreen';
+import NewTaskScreen from './screens/NewTaskScreen';
 
 export default function App() {
   return (
     <>
-      <TaskDetailsScreen />
+      {/* <TaskDetailsScreen /> */}
+      <NewTaskScreen /> 
     </>
   );
 };
