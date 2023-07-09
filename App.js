@@ -4,12 +4,14 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import TaskDetailsScreen from './screens/TaskDetailsScreen';
 import NewTaskScreen from './screens/NewTaskScreen';
+import HomeScreen from './screens/HomeScreen';
 
 export default function App() {
   return (
     <>
       {/* <TaskDetailsScreen /> */}
-      <NewTaskScreen /> 
+      {/* <NewTaskScreen />  */}
+      <HomeScreen />
     </>
   );
 };
