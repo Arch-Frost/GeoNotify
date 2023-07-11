@@ -1,69 +1,128 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ImageBackground,
+} from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const TaskDetailsScreen = () => {
-  const [status, setStatus] = useState('Pending'); // ['Pending', 'Completed']
-  const [buttonText, setButtonText] = useState('Mark as Completed'); // ['Mark as Completed', 'Mark as Pending']
+  const [status, setStatus] = useState("Pending"); // ['Pending', 'Completed']
+  const [buttonText, setButtonText] = useState("Mark as Completed"); // ['Mark as Completed', 'Mark as Pending']
 
   const handleStatusChange = () => {
     // Handle changing the task status
-    if (status === 'Pending') {
-      setStatus('Completed');
-      setButtonText('Reset');
+    if (status === "Pending") {
+      setStatus("Completed");
+      setButtonText("Reset");
     } else {
-      setStatus('Pending');
-      setButtonText('Mark as Completed');
+      setStatus("Pending");
+      setButtonText("Mark as Completed");
     }
   };
 
+  const handleEditTask = () => {}
+
+  const handleDeleteTask = () => {}
+
+  const handleGoBack = () => {}
+
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/placeholder-image.png')} style={styles.image} />
+      <ImageBackground
+        source={require("../assets/placeholder-image.png")}
+        style={styles.image}
+      >
+        <View
+          style={styles.imageOverlay}
+        >
+          <TouchableOpacity
+            onPress={handleGoBack}
+            style={{ flexDirection: "row", alignItems: "center" }}
+          >
+            <MaterialIcons name="arrow-back" size={30} color="#008080" />
+            {/* <Text style={{ color: "#008080", paddingHorizontal: 8 }}>Back</Text> */}
+          </TouchableOpacity>
+
+          <View style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            
+          }}>
+            <TouchableOpacity
+              onPress={handleEditTask}
+              style={{ flexDirection: "row", alignItems: "center", marginRight: 20 }}
+            >
+              <MaterialIcons name="edit" size={30} color="#008080" />
+              {/* <Text style={{ color: "#008080", paddingHorizontal: 8 }}>Edit</Text> */}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleDeleteTask}
+              style={{ flexDirection: "row", alignItems: "center", marginRight: 10 }}
+            >
+              <MaterialIcons name="delete" size={30} color="#008080" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ImageBackground>
+
       <View style={styles.content}>
+        
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Task Details</Text>
           <View style={styles.row}>
-            <MaterialIcons name="description" size={24} color="#008080" />
-            <Text style={styles.infoText}>Task details go here</Text>
+            <MaterialIcons name="description" size={24} color="#008080" style={styles.rowIcon} />
+            <Text style={styles.infoText}>Pick up bread from the store</Text>
           </View>
         </View>
+
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Location</Text>
           <View style={styles.row}>
-            <MaterialIcons name="place" size={24} color="#008080" />
-            <Text style={styles.infoText}>Specified location goes here</Text>
+            <MaterialIcons name="place" size={28} color="#008080" style={styles.rowIcon} />
+            <View>
+              <Text style={styles.infoText}>Within 75 m</Text>
+              <Text style={[styles.infoText, {fontSize: 18}]}>Grocery Store</Text>
+            </View>
           </View>
         </View>
+
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Geofence Radius</Text>
           <View style={styles.row}>
-            <MaterialIcons name="my-location" size={24} color="#008080" />
-            <Text style={styles.infoText}>Geofence radius goes here</Text>
+            <MaterialIcons name="access-time" size={28} color="#008080" style={styles.rowIcon} />
+            <View>
+            <Text style={styles.infoText}>Anytime during the day</Text>
+            <Text style={[styles.infoText, {fontSize: 18}]}>Monday, July 10 - present</Text>
+            </View>
           </View>
         </View>
+
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Time and Date</Text>
           <View style={styles.row}>
-            <MaterialIcons name="access-time" size={24} color="#008080" />
-            <Text style={styles.infoText}>Time and date go here</Text>
+            <MaterialIcons name="alarm" size={28} color="#008080" style={styles.rowIcon} />
+            <Text style={styles.infoText}>Alarm is on</Text>
           </View>
         </View>
+
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Repetition</Text>
           <View style={styles.row}>
-            <MaterialIcons name="repeat" size={24} color="#008080" />
-            <Text style={styles.infoText}>Repetition details go here</Text>
+            <MaterialIcons name="repeat" size={28} color="#008080" style={styles.rowIcon} />
+            <Text style={styles.infoText}>Does not repeat</Text>
           </View>
         </View>
+
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Status</Text>
           <View style={styles.row}>
-            <MaterialIcons name="info-outline" size={24} color="#008080" />
+            <MaterialIcons name="info-outline" size={28} color="#008080" style={styles.rowIcon} />
             <Text style={styles.infoText}>{status}</Text>
           </View>
         </View>
+
       </View>
+
       <TouchableOpacity style={styles.button} onPress={handleStatusChange}>
         <Text style={styles.buttonText}>{buttonText}</Text>
       </TouchableOpacity>
@@ -74,53 +133,64 @@ const TaskDetailsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#D3D3D3',
+    // backgroundColor: '#D3D3D3',
   },
   image: {
-    width: '100%',
+    width: "100%",
     height: 200,
+    resizeMode: "cover",
+  },
+  imageOverlay: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 14,
+    borderRadius: 10,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
   },
   content: {
     flex: 1,
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
+    padding: 16,
     paddingTop: 30,
-    paddingHorizontal: 16,
   },
   section: {
-    marginBottom: 20,
-    alignItems: 'flex-start',
+    paddingBottom: 20,
+    alignItems: "flex-start",
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
-    color: '#008080', // Teal
+    color: "#008080", // Teal
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
-  infoText
-  : {
+  rowIcon: {
+    paddingRight: 20,
+  },
+  infoText: {
     marginLeft: 10,
     fontSize: 16,
-    color: '#000',
-    textAlign: 'center',
+    color: "#000",
+    // textAlign: "center",
   },
   button: {
-    backgroundColor: '#008080', // Teal
+    backgroundColor: "#008080", // Teal
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 10,
     marginBottom: 16,
-    width: '90%',
-    alignSelf: 'center',
+    width: "90%",
+    alignSelf: "center",
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
 

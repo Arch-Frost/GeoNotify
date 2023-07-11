@@ -26,7 +26,7 @@ const HomeScreen = () => {
     },
     {
       id: "2",
-      name: "Task 2",
+      name: "Buy Bread",
       details: "Task 2 Details",
       location: "Location 2",
       distance: "5 km",
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    marginTop: 40,
+    marginTop: 30,
     backgroundColor: "#fff",
   },
   taskContainer: {

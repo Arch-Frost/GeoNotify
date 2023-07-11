@@ -23,6 +23,7 @@ const Separator = () => <View style={styles.separator}></View>;
 const NewTaskScreen = () => {
   const [isRingAlarmEnabled, setIsRingAlarmEnabled] = useState(false);
   const [isAnytimeEnabled, setIsAnytimeEnabled] = useState(true);
+  const [isRepeatEnabled, setIsRepeatEnabled] = useState(false);
 
   const alarmSwitch = () => {
     setIsRingAlarmEnabled((previousState) => !previousState);
@@ -31,6 +32,10 @@ const NewTaskScreen = () => {
   const anytimeSwitch = () => {
     setIsAnytimeEnabled((previousState) => !previousState);
   };
+
+  const repeatSwitch = () => {
+    setIsRepeatEnabled((previousState) => !previousState);
+  }
 
   // ===================================================================================
   const [startDate, setStartDate] = useState("");
@@ -144,8 +149,6 @@ const NewTaskScreen = () => {
 
         <Separator />
 
-        {/* =============================== Date Selector =============================== */}
-
         <View style={isAnytimeEnabled ? {alignItems: "center", opacity: 0} : {alignItems: "center", opacity: 1}}>
           <View style={styles.optionContainer}>
             <FontAwesome5 name="calendar-alt" size={24} color="#008080" />
@@ -258,6 +261,19 @@ const NewTaskScreen = () => {
             </Text>
           </TouchableOpacity>
 
+          <Separator />
+          <View style={styles.optionContainer} onTouchEnd={repeatSwitch}>
+            <MaterialIcons name="repeat" size={24} color="#008080" />
+            <Text style={[styles.infoText]}>Repeat </Text>
+            <View style={{ width: "58%" }}></View>
+            <Switch 
+            trackColor={{ false: "#808080", true: "#008080" }}
+            thumbColor={"#f4f3f4"}
+            ios_backgroundColor="#808080"
+            value={isRepeatEnabled}
+            />
+          </View>
+
           {/* ================================================= Save Button ================================================= */}
           <View style={{ height: 50 }}></View>
         </View>
@@ -339,7 +355,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 8,
     paddingHorizontal: 16,
-    margin: 5,
+    marginHorizontal: 5,
   },
   locationButton: {
     // backgroundColor: "#D3D3D3", // Light Gray
