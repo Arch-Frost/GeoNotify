@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -84,13 +84,18 @@ const HomeScreen = () => {
     setFilteredTasks(filtered);
   };
 
+  const handleItemSelection = (item) => {
+    setSelectedTask(item);
+    navigation.navigate("Task Details");
+  }
+
   const renderTaskItem = ({ item }) => (
     <TouchableOpacity
       style={[
         styles.taskContainer,
         selectedTask?.id === item.id && styles.selectedTaskContainer,
       ]}
-      onPress={() => setSelectedTask(item)}
+      onPress={(item) => {handleItemSelection(item)}}
     >
       <MaterialIcons name="location-on" size={34} color="red" />
       <View style={styles.taskDetails}>
@@ -100,6 +105,10 @@ const HomeScreen = () => {
       <Text style={styles.taskDistance}>{item.distance}</Text>
     </TouchableOpacity>
   );
+
+  const addTask = () => {
+    navigation.navigate("New Task");
+  }
 
   return (
     <View style={styles.container}>
@@ -130,25 +139,8 @@ const HomeScreen = () => {
         keyExtractor={(item) => item.id}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
-      {selectedTask && (
-        <View style={{ alignItems: "center" }}>
-          <Text>Selected Task: {selectedTask.name} </Text>
-          <Text>Details: {selectedTask.details} </Text>
-          <TouchableOpacity
-            style={{ flexDirection: "row", alignItems: "center" }}
-            onPress={() => {
-              setSelectedTask(null);
-              setSearchQuery("");
-              setFilteredTasks([]);
-            }}
-          >
-            <Ionicons name="trash" size={24} color="#008080" />
-            <Text style={{ color: "#008080" }}>Clear Selected</Text>
-          </TouchableOpacity>
-        </View>
-      )}
 
-      <TouchableOpacity style={styles.fabContainer}>
+      <TouchableOpacity style={styles.fabContainer} onPress={addTask}>
         <View style={styles.fabButton}>
           <Ionicons name="add" size={24} color="#fff" />
         </View>
@@ -161,7 +153,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    marginTop: 30,
+    // marginTop: 30,
     backgroundColor: "#fff",
   },
   taskContainer: {
@@ -181,7 +173,8 @@ const styles = StyleSheet.create({
     borderColor: "#008080", // Teal
     borderWidth: 2,
     borderRadius: 8,
-    margin: 8,
+    marginHorizontal: 8,
+    marginBottom: 8, 
   },
   searchInput: {
     flex: 1,

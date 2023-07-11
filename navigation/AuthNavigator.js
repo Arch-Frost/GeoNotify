@@ -1,6 +1,7 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import MainNavigator from "./MainNavigator";
 
 import LoginScreen from "../screens/LoginScreen";
 import SignUpScreen from "../screens/SignUpScreen";
@@ -9,7 +10,6 @@ const Stack = createStackNavigator();
 
 export default function AuthNavigator() {
   return (
-    <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen
           name="Login"
@@ -22,6 +22,5 @@ export default function AuthNavigator() {
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
-    </NavigationContainer>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { CommonActions } from '@react-navigation/native';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -8,7 +9,12 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = () => {
     // Handle the login process
-    // You can access the entered email and password using the 'email' and 'password' state variables
+
+    // Navigate to the Main screen
+    navigation.dispatch(CommonActions.reset({
+      index: 0,
+      routes: [{ name: 'Main' }],
+    }));
   };
 
   const handleGoogleLogin = () => {

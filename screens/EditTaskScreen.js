@@ -20,7 +20,7 @@ import DatePicker from "react-native-modern-datepicker";
 
 const Separator = () => <View style={styles.separator}></View>;
 
-const NewTaskScreen = ({ navigation }) => {
+const EditTaskScreen = ({ navigation }) => {
   const [isRingAlarmEnabled, setIsRingAlarmEnabled] = useState(false);
   const [isAnytimeEnabled, setIsAnytimeEnabled] = useState(true);
   const [isRepeatEnabled, setIsRepeatEnabled] = useState(false);
@@ -38,7 +38,7 @@ const NewTaskScreen = ({ navigation }) => {
   }
 
   const handleSaveButton = () => {
-    navigation.goBack();
+    navigation.popToTop();
   }
 
   // ===================================================================================
@@ -400,4 +400,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NewTaskScreen;
+export default EditTaskScreen;

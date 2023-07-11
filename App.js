@@ -1,20 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 
-
-import TaskDetailsScreen from './screens/TaskDetailsScreen';
-import NewTaskScreen from './screens/NewTaskScreen';
-import HomeScreen from './screens/HomeScreen';
-import AuthNavigator from './navigation/AuthNavigator';
+import AppNavigator from './navigation/AppNavigator';
 
 export default function App() {
   return (
     <>
-      {/* <TaskDetailsScreen /> */}
-      {/* <NewTaskScreen />  */}
-      {/* <HomeScreen /> */}
-      <AuthNavigator />
-      <StatusBar style="auto" hidden={true}/>
+      <AppNavigator />
+      <StatusBar style="auto"/>
     </>
   );
 };

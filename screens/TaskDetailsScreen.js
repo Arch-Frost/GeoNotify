@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
-const TaskDetailsScreen = () => {
+const TaskDetailsScreen = ({ navigation }) => {
   const [status, setStatus] = useState("Pending"); // ['Pending', 'Completed']
   const [buttonText, setButtonText] = useState("Mark as Completed"); // ['Mark as Completed', 'Mark as Pending']
 
@@ -24,13 +24,22 @@ const TaskDetailsScreen = () => {
     }
   };
 
-  const handleEditTask = () => {}
+  const handleEditTask = () => {
+    navigation.navigate("Edit Task");
+  }
 
-  const handleDeleteTask = () => {}
+  const handleDeleteTask = () => {
+    // Handle deleting the task
+    navigation.goBack();
+  }
 
-  const handleGoBack = () => {}
+  const handleGoBack = () => {
+    navigation.goBack();
+  }
 
   return (
+    <>
+    <View style={{height: 40, backgroundColor: '#ebca5c'}} />
     <View style={styles.container}>
       <ImageBackground
         source={require("../assets/placeholder-image.png")}
@@ -39,6 +48,9 @@ const TaskDetailsScreen = () => {
         <View
           style={styles.imageOverlay}
         >
+          <View style={{flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",}}>
           <TouchableOpacity
             onPress={handleGoBack}
             style={{ flexDirection: "row", alignItems: "center" }}
@@ -46,6 +58,8 @@ const TaskDetailsScreen = () => {
             <MaterialIcons name="arrow-back" size={30} color="#008080" />
             {/* <Text style={{ color: "#008080", paddingHorizontal: 8 }}>Back</Text> */}
           </TouchableOpacity>
+          <Text style={{ color: "#008080", paddingHorizontal: 8, fontSize: 18, fontWeight: 'bold' }}>Task Details</Text>
+          </View>
 
           <View style={{
             flexDirection: "row",
@@ -127,6 +141,7 @@ const TaskDetailsScreen = () => {
         <Text style={styles.buttonText}>{buttonText}</Text>
       </TouchableOpacity>
     </View>
+    </>
   );
 };
 
@@ -146,7 +161,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 14,
     borderRadius: 10,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: "rgba(255, 255, 255, 0.4)",
   },
   content: {
     flex: 1,
