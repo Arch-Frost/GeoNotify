@@ -6,6 +6,7 @@ import HomeScreen from "../screens/HomeScreen";
 import NewTaskScreen from "../screens/NewTaskScreen";
 import EditTaskScreen from "../screens/EditTaskScreen";
 import TaskDetailsScreen from "../screens/TaskDetailsScreen";
+import LocationMapScreen from "../screens/LocationMapScreen";
 import { Alert } from "react-native";
 
 const Stack = createStackNavigator();
@@ -82,6 +83,15 @@ export default function MainNavigator({ navigation }) {
         component={TaskDetailsScreen}
         options={{
           headerShown: false,
+          headerStyle: { borderBottomWidth: 1 },
+        }}
+      />
+      <Stack.Screen
+        name="Map"
+        component={LocationMapScreen}
+        options={{
+          headerShown: true,
+          headerTitle: "Select Location",
           headerStyle: { borderBottomWidth: 1 },
         }}
       />

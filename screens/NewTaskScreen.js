@@ -37,6 +37,10 @@ const NewTaskScreen = ({ navigation }) => {
     setIsRepeatEnabled((previousState) => !previousState);
   }
 
+  const selectLocation = () => {
+    navigation.navigate("Map");
+  }
+
   const handleSaveButton = () => {
     navigation.goBack();
   }
@@ -94,7 +98,7 @@ const NewTaskScreen = ({ navigation }) => {
         <Separator />
         {/* =============================== Location Selector =============================== */}
         <View style={styles.optionContainer}>
-          <TouchableOpacity style={styles.locationButton}>
+          <TouchableOpacity style={styles.locationButton} onPress={selectLocation}>
             <MaterialIcons name="place" size={24} color="#008080" />
             <Text style={[styles.infoText, { width: "80%" }]}>
               Select Location
