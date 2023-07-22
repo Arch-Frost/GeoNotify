@@ -9,22 +9,25 @@ import { useAuthentication } from "../utils/hooks/useAuthentication";
 const Stack = createStackNavigator();
 
 export default function AppNavigator() {
-    const user = useAuthentication();
+  const user = useAuthentication();
 
-    return (
-        <NavigationContainer>
-        <Stack.Navigator initialRouteName={user ? 'Main' : 'Auth'}>
-            <Stack.Screen
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        {user ? (
+          <Stack.Screen
+            name="Main"
+            component={MainNavigator}
+            options={{ headerShown: false }}
+          />
+        ) : (
+          <Stack.Screen
             name="Auth"
             component={AuthNavigator}
             options={{ headerShown: false }}
-            />
-            <Stack.Screen
-            name="Main"
-            component={MainNavigator}
-            options={{ headerShown: false, gestureEnabled: false,  } }
-            />
-        </Stack.Navigator>
-        </NavigationContainer>
-    );
+          />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 }

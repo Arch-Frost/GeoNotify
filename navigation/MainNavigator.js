@@ -8,10 +8,19 @@ import EditTaskScreen from "../screens/EditTaskScreen";
 import TaskDetailsScreen from "../screens/TaskDetailsScreen";
 import LocationMapScreen from "../screens/LocationMapScreen";
 import { Alert } from "react-native";
+import { getAuth } from "firebase/auth";
 
 const Stack = createStackNavigator();
+const auth = getAuth();
 
 export default function MainNavigator({ navigation }) {
+  const logoutFunction = () => {
+    console.log("Logout function called");
+    auth.signOut().then(() => {
+      navigation.navigate("Auth");
+    });
+  }
+  
   const logout = () => {
     return (
       <Ionicons
@@ -29,10 +38,7 @@ export default function MainNavigator({ navigation }) {
             },
             {
               text: "Log Out",
-              onPress: () => {
-                console.log("Logout Pressed");
-                navigation.navigate("Auth");
-              },
+              onPress: () => logoutFunction(),
             },
           ]);
         }}

@@ -9,6 +9,8 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
+%ProgramData%/
+android/
 
 # macOS
 .DS_Store
@@ -17,3 +19,4 @@ web-build/
 .metro-health-check*
 debug.log
 .env
+google-services.json

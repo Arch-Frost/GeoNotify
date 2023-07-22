@@ -6,15 +6,21 @@ import {
   FlatList,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } from "react-native";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
+import { useAuthentication } from "../utils/hooks/useAuthentication";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth();
 
 const HomeScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+
+  const user = useAuthentication();
 
   const tasks = [
     {
@@ -87,7 +93,7 @@ const HomeScreen = ({ navigation }) => {
   const handleItemSelection = (item) => {
     setSelectedTask(item);
     navigation.navigate("Task Details");
-  }
+  };
 
   const renderTaskItem = ({ item }) => (
     <TouchableOpacity
@@ -95,7 +101,9 @@ const HomeScreen = ({ navigation }) => {
         styles.taskContainer,
         selectedTask?.id === item.id && styles.selectedTaskContainer,
       ]}
-      onPress={(item) => {handleItemSelection(item)}}
+      onPress={(item) => {
+        handleItemSelection(item);
+      }}
     >
       <MaterialIcons name="location-on" size={34} color="red" />
       <View style={styles.taskDetails}>
@@ -108,17 +116,17 @@ const HomeScreen = ({ navigation }) => {
 
   const addTask = () => {
     navigation.navigate("New Task");
-  }
+  };
 
   return (
     <View style={styles.container}>
+      <Text style={styles.welcomeText}>Welcome {user?.displayName}!</Text>
       <TouchableOpacity style={styles.searchBox}>
         <TextInput
           style={styles.searchInput}
           placeholder={"Search Tasks"}
           value={searchQuery}
           onChangeText={handleSearch}
-          
         />
         <MaterialIcons
           name={isSearching ? "close" : "search"}
@@ -152,7 +160,8 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
     // marginTop: 30,
     backgroundColor: "#fff",
   },
@@ -174,7 +183,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 8,
     marginHorizontal: 8,
-    marginBottom: 8, 
+    marginBottom: 8,
   },
   searchInput: {
     flex: 1,
@@ -226,6 +235,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 2,
+  },
+  welcomeText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#008080",
+    textAlign: "center",
+    padding: 10
   },
 });
 
