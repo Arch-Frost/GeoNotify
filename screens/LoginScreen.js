@@ -11,15 +11,26 @@ import {
 import {
   getAuth,
   signInWithEmailAndPassword,
+  signInWithCredential,
   fetchSignInMethodsForEmail,
   GoogleAuthProvider,
 } from "firebase/auth";
+import { useAuthentication } from "../utils/hooks/useAuthentication";
+
+
+// TODO: Add Forgot Password functionality
 
 const auth = getAuth();
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const validateEmail = (email) => {
+    return email.match(
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+  }
 
   const handleLogin = async () => {
     // Handle the login process
@@ -28,8 +39,13 @@ const LoginScreen = ({ navigation }) => {
       return;
     }
 
+    if (!validateEmail(email)) {
+      alert("Please enter a valid email");
+      return;
+    }
+
     // Check if the email exists
-    const signInMethods = await fetchSignInMethodsForEmail(auth, email)
+    const signInMethods = await fetchSignInMethodsForEmail(auth, email);
     if (signInMethods.length === 0) {
       alert("Email does not exist");
       return;
@@ -38,8 +54,8 @@ const LoginScreen = ({ navigation }) => {
     await signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
-        const user = userCredential.user;
         console.log("User logged in successfully");
+        const user = userCredential.user;
       })
       .catch((error) => {
         const errorMessage = error.message;
@@ -48,17 +64,7 @@ const LoginScreen = ({ navigation }) => {
       });
 
     // Navigate to the Main screen
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: "Main" }],
-      })
-    );
-  };
-
-  const handleGoogleLogin = () => {
-    // Handle Google login
-    console.log("Google login button pressed")
+    navigation.navigate("Main");
   };
 
   const signupLink = () => {
@@ -88,7 +94,7 @@ const LoginScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin}>
+      {/* <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin}>
         <Image
           style={{ width: 20, height: 20 }}
           source={{
@@ -96,7 +102,8 @@ const LoginScreen = ({ navigation }) => {
           }}
         />
         <Text style={styles.googleButtonText}>Sign in with Google</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
+
       <TouchableOpacity style={styles.signupLink} onPress={signupLink}>
         <Text style={styles.signupLinkText}>
           Don't have an account? Sign Up

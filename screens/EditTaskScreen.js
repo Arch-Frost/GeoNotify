@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRoute } from "@react-navigation/native";
 import {
   View,
   Text,
@@ -21,6 +22,10 @@ import DatePicker from "react-native-modern-datepicker";
 const Separator = () => <View style={styles.separator}></View>;
 
 const EditTaskScreen = ({ navigation }) => {
+  const route = useRoute();
+
+  const [location, setLocation] = useState([]);
+
   const [isRingAlarmEnabled, setIsRingAlarmEnabled] = useState(false);
   const [isAnytimeEnabled, setIsAnytimeEnabled] = useState(true);
   const [isRepeatEnabled, setIsRepeatEnabled] = useState(false);
@@ -45,7 +50,6 @@ const EditTaskScreen = ({ navigation }) => {
     navigation.popToTop();
   }
 
-  // ===================================================================================
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [startDateModalVisible, setStartDateModalVisible] = useState(false);
@@ -71,7 +75,12 @@ const EditTaskScreen = ({ navigation }) => {
     setStartDate("");
     setEndDate("");
   };
-  // ===================================================================================
+
+  useEffect(() => {
+    if (route.params?.location) {
+      setLocation(route.params.location);
+    }
+  }, [route.params?.location])
 
   return (
     <KeyboardAvoidingView
@@ -101,7 +110,7 @@ const EditTaskScreen = ({ navigation }) => {
           <TouchableOpacity style={styles.locationButton} onPress={selectLocation}>
             <MaterialIcons name="place" size={24} color="#008080" />
             <Text style={[styles.infoText, { width: "80%" }]}>
-              Select Location
+            {location.length === 0 ? "Select Location" : 'Lat: ' + location.latitude + ",\nLong: " + location.longitude}
             </Text>
             <MaterialIcons name="search" size={24} color="#808080" />
           </TouchableOpacity>

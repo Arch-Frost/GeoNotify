@@ -24,13 +24,16 @@ export default {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "googleServicesFile": process.env.GOOGLE_SERVICES_JSON,
-      "package" : "com.geonotify.itsmefrost"
+      "package" : "com.geonotify.itsmefrost",
+      "config": {
+        "googleMaps": {
+          "apiKey": process.env.GOOGLE_MAPS_API_KEY
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["@react-native-google-signin/google-signin"],
     
     "extra": {
       firebaseApiKey: process.env.FIREBASE_API_KEY,
@@ -40,7 +43,6 @@ export default {
       firebaseMessagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
       firebaseAppId: process.env.FIREBASE_APP_ID,
       firebaseMeasurementId: process.env.FIREBASE_MEASUREMENT_ID,
-      googleWebClientId: process.env.GOOGLE_CLIENT_ID,
       
       "eas": {
         "projectId": "d55231d1-f951-47ae-92ee-c02e3d2caf55"

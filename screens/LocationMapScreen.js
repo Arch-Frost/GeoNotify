@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { StyleSheet, Text, View, Button, TouchableOpacity } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import * as Location from "expo-location";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
-export default function LocationMapScreen({ navigation }) {
+export default function LocationMapScreen() {
+  const navigation = useNavigation()
+  const route = useRoute()
+  
   const [location, setLocation] = useState(null);
   const [region, setRegion] = useState(null);
   const [markerLocation, setMarkerLocation] = useState(null);
@@ -14,6 +18,13 @@ export default function LocationMapScreen({ navigation }) {
   useEffect(() => {
     getLocation();
   }, []);
+
+  const getPreviousScreenName = () => {
+    const routes = navigation.getState().routes
+    const name = routes[routes.length-2].name
+    
+    return name
+  }
 
   const getLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -49,7 +60,10 @@ export default function LocationMapScreen({ navigation }) {
     if (markerLocation) {
       console.log("Marker location:", markerLocation);
       // Perform any desired action with the marker location here
-      navigation.goBack();
+      // Navigate back to the New Task screen or Edit Task screen
+      // depending on the previous screen name
+      const previousScreenName = getPreviousScreenName();
+      navigation.navigate(previousScreenName, { location: markerLocation });
     }
   };
 
@@ -71,6 +85,8 @@ export default function LocationMapScreen({ navigation }) {
             onPress={handleMapPress}
             showsUserLocation={true}
             showsMyLocationButton={false}
+            showsPointsOfInterest={true}
+            provider={PROVIDER_GOOGLE}
           >
             {markerLocation && <Marker coordinate={markerLocation} />}
           </MapView>

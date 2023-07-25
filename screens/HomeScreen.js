@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
   Text,
@@ -11,69 +12,93 @@ import {
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { useAuthentication } from "../utils/hooks/useAuthentication";
 import { getAuth } from "firebase/auth";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 
 const auth = getAuth();
+const db = getFirestore();
 
 const HomeScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [tasks, setTasks] = useState([]);
 
   const user = useAuthentication();
 
-  const tasks = [
-    {
-      id: "1",
-      name: "Task 1",
-      details: "Task 1 Details",
-      location: "Location 1",
-      distance: "2 km",
-    },
-    {
-      id: "2",
-      name: "Buy Bread",
-      details: "Task 2 Details",
-      location: "Location 2",
-      distance: "5 km",
-    },
-    {
-      id: "3",
-      name: "Buy Milk",
-      details: "Task 3 Details",
-      location: "Location 3",
-      distance: "5 km",
-    },
-    {
-      id: "4",
-      name: "Buy Gift",
-      details: "Task 4 Details",
-      location: "Location 4",
-      distance: "5 km",
-    },
-    {
-      id: "5",
-      name: "Buy Markers",
-      details: "Task 5 Details",
-      location: "Location 5",
-      distance: "5 km",
-    },
-    {
-      id: "6",
-      name: "Buy Paint",
-      details: "Task 6 Details",
-      location: "Location 6",
-      distance: "5 km",
-    },
-    {
-      id: "7",
-      name: "Buy Paper",
-      details: "Task 7 Details",
-      location: "Location 7",
-      distance: "5 km",
-    },
-    // Add more tasks here
-  ];
+  // const tasks = [
+  //   {
+  //     id: "1",
+  //     name: "Task 1",
+  //     details: "Task 1 Details",
+  //     location: "Location 1",
+  //     distance: "2 km",
+  //   },
+  //   {
+  //     id: "2",
+  //     name: "Buy Bread",
+  //     details: "Task 2 Details",
+  //     location: "Location 2",
+  //     distance: "5 km",
+  //   },
+  //   {
+  //     id: "3",
+  //     name: "Buy Milk",
+  //     details: "Task 3 Details",
+  //     location: "Location 3",
+  //     distance: "5 km",
+  //   },
+  //   {
+  //     id: "4",
+  //     name: "Buy Gift",
+  //     details: "Task 4 Details",
+  //     location: "Location 4",
+  //     distance: "5 km",
+  //   },
+  //   {
+  //     id: "5",
+  //     name: "Buy Markers",
+  //     details: "Task 5 Details",
+  //     location: "Location 5",
+  //     distance: "5 km",
+  //   },
+  //   {
+  //     id: "6",
+  //     name: "Buy Paint",
+  //     details: "Task 6 Details",
+  //     location: "Location 6",
+  //     distance: "5 km",
+  //   },
+  //   {
+  //     id: "7",
+  //     name: "Buy Paper",
+  //     details: "Task 7 Details",
+  //     location: "Location 7",
+  //     distance: "5 km",
+  //   },
+  //   // Add more tasks here
+  // ];
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchTasks = async () => {
+        const tasks = [];
+        const query = collection(db, "users", auth.currentUser.uid, "tasks");
+        const querySnapshot = await getDocs(query);
+        querySnapshot.forEach((doc) => {
+          tasks.push({ ...doc.data(), id: doc.id });
+        });
+        setTasks(tasks);
+      };
+      fetchTasks();
+    }, [])
+    );
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -107,10 +132,10 @@ const HomeScreen = ({ navigation }) => {
     >
       <MaterialIcons name="location-on" size={34} color="red" />
       <View style={styles.taskDetails}>
-        <Text style={styles.taskName}>{item.name}</Text>
-        <Text style={styles.taskLocation}>{item.location}</Text>
+        <Text style={styles.taskName}>{item.taskName}</Text>
+        <Text style={styles.taskLocation}>{item?.location?.latitude + ", " + item?.location.longitude}</Text>
       </View>
-      <Text style={styles.taskDistance}>{item.distance}</Text>
+      {/* <Text style={styles.taskDistance}>{item.distance}</Text> */}
     </TouchableOpacity>
   );
 
@@ -241,7 +266,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#008080",
     textAlign: "center",
-    padding: 10
+    padding: 10,
   },
 });
 

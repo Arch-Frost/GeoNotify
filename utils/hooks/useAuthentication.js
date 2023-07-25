@@ -13,8 +13,7 @@ export const useAuthentication = () => {
                 setUser(user);
             } else {
                 setUser(undefined);
-            }            
-            console.log(user)
+            }
         });
         return () => unsubscribe();
     }
