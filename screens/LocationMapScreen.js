@@ -59,11 +59,14 @@ export default function LocationMapScreen() {
   const handleSelectionButtonPress = () => {
     if (markerLocation) {
       console.log("Marker location:", markerLocation);
-      // Perform any desired action with the marker location here
-      // Navigate back to the New Task screen or Edit Task screen
-      // depending on the previous screen name
+      
       const previousScreenName = getPreviousScreenName();
-      navigation.navigate(previousScreenName, { location: markerLocation });
+      if (previousScreenName === "New Task") {
+        navigation.navigate("New Task", { location: markerLocation })
+      }
+      else if (previousScreenName === "Edit Task") {
+        navigation.navigate("Edit Task", { location: markerLocation, task: route.params.task })
+      }
     }
   };
 

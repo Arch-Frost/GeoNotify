@@ -98,7 +98,7 @@ const HomeScreen = ({ navigation }) => {
       };
       fetchTasks();
     }, [])
-    );
+  );
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -117,23 +117,25 @@ const HomeScreen = ({ navigation }) => {
 
   const handleItemSelection = (item) => {
     setSelectedTask(item);
-    navigation.navigate("Task Details");
+    console.log(item);
+    // Pass the selected task to the next screen
+    navigation.navigate("Task Details", { task: item });
+    // navigation.navigate("Task Details");
   };
 
   const renderTaskItem = ({ item }) => (
     <TouchableOpacity
-      style={[
-        styles.taskContainer,
-        selectedTask?.id === item.id && styles.selectedTaskContainer,
-      ]}
-      onPress={(item) => {
+      style={[styles.taskContainer]}
+      onPress={() => {
         handleItemSelection(item);
       }}
     >
       <MaterialIcons name="location-on" size={34} color="red" />
       <View style={styles.taskDetails}>
         <Text style={styles.taskName}>{item.taskName}</Text>
-        <Text style={styles.taskLocation}>{item?.location?.latitude + ", " + item?.location.longitude}</Text>
+        <Text style={styles.taskLocation}>
+          {item?.location?.latitude + ", " + item?.location.longitude}
+        </Text>
       </View>
       {/* <Text style={styles.taskDistance}>{item.distance}</Text> */}
     </TouchableOpacity>

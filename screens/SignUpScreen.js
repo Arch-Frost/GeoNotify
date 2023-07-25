@@ -13,6 +13,7 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const auth = getAuth();
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useRoute } from "@react-navigation/native";
+import { useFocusEffect, useRoute } from "@react-navigation/native";
 import {
   View,
   Text,
@@ -15,25 +15,35 @@ import {
 import { MaterialIcons, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import DatePicker from "react-native-modern-datepicker";
 
-// Primary Color: Teal (#008080)
-// Secondary Color: Light Gray (#D3D3D3)
-// Accent Color: Dark Teal (#006766)
+import { getAuth } from "firebase/auth";
+import { getFirestore, doc, updateDoc } from "firebase/firestore";
+
+const auth = getAuth();
+const db = getFirestore();
 
 const Separator = () => <View style={styles.separator}></View>;
 
 const EditTaskScreen = ({ navigation }) => {
   const route = useRoute();
+  const task = route.params.task;
 
-  const [location, setLocation] = useState([]);
+  const [taskName, setTaskName] = useState(task.taskName);
+  const [geoFenceRadius, setGeoFenceRadius] = useState(task.geoFenceRadius); // Default value
+  const [location, setLocation] = useState(task.location);
+  const [isRingAlarmEnabled, setIsRingAlarmEnabled] = useState(task.isRingAlarmEnabled);
 
-  const [isRingAlarmEnabled, setIsRingAlarmEnabled] = useState(false);
-  const [isAnytimeEnabled, setIsAnytimeEnabled] = useState(true);
-  const [isRepeatEnabled, setIsRepeatEnabled] = useState(false);
-
+  const [isAnytimeEnabled, setIsAnytimeEnabled] = useState(task.isAnytimeEnabled);
+  const [startDate, setStartDate] = useState(task.startDate);
+  const [endDate, setEndDate] = useState(task.endDate);
+  const [startDateModalVisible, setStartDateModalVisible] = useState(false);
+  const [endDateModalVisible, setEndDateModalVisible] = useState(false);
+  
+  const [isRepeatEnabled, setIsRepeatEnabled] = useState(task.isRepeatEnabled);
+  
   const alarmSwitch = () => {
     setIsRingAlarmEnabled((previousState) => !previousState);
   };
-
+  
   const anytimeSwitch = () => {
     setIsAnytimeEnabled((previousState) => !previousState);
   };
@@ -43,17 +53,47 @@ const EditTaskScreen = ({ navigation }) => {
   }
 
   const selectLocation = () => {
-    navigation.navigate("Map");
+    if (task) {
+      navigation.navigate("Map", { task: task });
+    }
   }
 
-  const handleSaveButton = () => {
+  const handleSaveButton = async () => {
+    if (taskName.length === 0) {
+      alert("Please enter a task name.");
+      return;
+    }
+    if (location.length === 0) {
+      alert("Please select a location.");
+      return;
+    }
+    if (startDate.length === 0 && !isAnytimeEnabled) {
+      alert("Please select a start date.");
+      return;
+    }
+    if (endDate.length === 0 && !isAnytimeEnabled) {
+      alert("Please select an end date.");
+      return;
+    }
+    
+    const editedTask = {
+      taskName: taskName,
+      geoFenceRadius: Number(geoFenceRadius),
+      location: location,
+      isRingAlarmEnabled: isRingAlarmEnabled,
+      isAnytimeEnabled: isAnytimeEnabled,
+      startDate: startDate,
+      endDate: endDate,
+      isRepeatEnabled: isRepeatEnabled,
+    }
+
+    const taskRef = doc(db, "users", auth.currentUser.uid, "tasks", task.id);
+    await updateDoc(taskRef, editedTask);
+
+    console.log("Task updated for user: ", auth.currentUser.displayName, " with ID: ", taskRef.id);
+    alert("Task Updated successfully!");
     navigation.popToTop();
   }
-
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [startDateModalVisible, setStartDateModalVisible] = useState(false);
-  const [endDateModalVisible, setEndDateModalVisible] = useState(false);
 
   const handleStartDateModal = () => {
     setStartDateModalVisible(!startDateModalVisible);
@@ -72,15 +112,17 @@ const EditTaskScreen = ({ navigation }) => {
   };
 
   const clearDates = () => {
-    setStartDate("");
+    setStartDate(getToday("/"));
     setEndDate("");
   };
-
+  
   useEffect(() => {
     if (route.params?.location) {
       setLocation(route.params.location);
     }
   }, [route.params?.location])
+
+
 
   return (
     <KeyboardAvoidingView
@@ -101,6 +143,8 @@ const EditTaskScreen = ({ navigation }) => {
             style={styles.reminderInput}
             placeholder="Remind Me About"
             placeholderTextColor="#808080" // Gray
+            onChangeText={(text) => setTaskName(text)}
+            value={taskName}
           />
         </View>
 
@@ -110,7 +154,7 @@ const EditTaskScreen = ({ navigation }) => {
           <TouchableOpacity style={styles.locationButton} onPress={selectLocation}>
             <MaterialIcons name="place" size={24} color="#008080" />
             <Text style={[styles.infoText, { width: "80%" }]}>
-            {location.length === 0 ? "Select Location" : 'Lat: ' + location.latitude + ",\nLong: " + location.longitude}
+              {location.length === 0 ? "Select Location" : 'Lat: ' + location.latitude + ",\nLong: " + location.longitude}
             </Text>
             <MaterialIcons name="search" size={24} color="#808080" />
           </TouchableOpacity>
@@ -126,6 +170,7 @@ const EditTaskScreen = ({ navigation }) => {
             placeholder="75"
             placeholderTextColor="#808080"
             keyboardType="number-pad"
+            onChangeText={(text) => setGeoFenceRadius(text)}
           />
           <Text style={[styles.infoText]}>m</Text>
           <View style={{ width: "35%" }}></View>

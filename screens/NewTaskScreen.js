@@ -13,7 +13,7 @@ import {
 } from "react-native";
 
 import { MaterialIcons, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import DatePicker from "react-native-modern-datepicker";
+import DatePicker, { getFormatedDate, getToday } from "react-native-modern-datepicker";
 
 import { getAuth } from "firebase/auth";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
@@ -33,7 +33,7 @@ const NewTaskScreen = ({ navigation }) => {
 
   const [isAnytimeEnabled, setIsAnytimeEnabled] = useState(true);
   
-  const [startDate, setStartDate] = useState("");
+  const [startDate, setStartDate] = useState(getToday("/"));
   const [endDate, setEndDate] = useState("");
   const [startDateModalVisible, setStartDateModalVisible] = useState(false);
   const [endDateModalVisible, setEndDateModalVisible] = useState(false);
@@ -83,6 +83,7 @@ const NewTaskScreen = ({ navigation }) => {
       startDate: startDate,
       endDate: endDate,
       isRepeatEnabled: isRepeatEnabled,
+      status: false,
     }
 
     const taskRef = await addDoc(collection(db, "users", auth.currentUser.uid, 'tasks'), newTask);
@@ -108,7 +109,7 @@ const NewTaskScreen = ({ navigation }) => {
   };
 
   const clearDates = () => {
-    setStartDate("");
+    setStartDate(getToday("/"));
     setEndDate("");
   };
   
