@@ -1,17 +1,30 @@
 import React, { useState, useEffect, useRef } from "react";
-import { StyleSheet, Text, View, Button, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  TouchableOpacity,
+  Modal,
+  TextInput,
+} from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import * as Location from "expo-location";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import * as LocationUtils from "../utils/LocationManager";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function LocationMapScreen() {
-  const navigation = useNavigation()
-  const route = useRoute()
-  
+  const navigation = useNavigation();
+  const route = useRoute();
+
   const [location, setLocation] = useState(null);
+  const [locationName, setLocationName] = useState("");
   const [region, setRegion] = useState(null);
   const [markerLocation, setMarkerLocation] = useState(null);
+
+  const [locationNameModalVisible, setLocationNameModalVisible] =
+    useState(false);
 
   const mapViewRef = useRef(null);
 
@@ -20,17 +33,15 @@ export default function LocationMapScreen() {
   }, []);
 
   const getPreviousScreenName = () => {
-    const routes = navigation.getState().routes
-    const name = routes[routes.length-2].name
-    
-    return name
-  }
+    const routes = navigation.getState().routes;
+    const name = routes[routes.length - 2].name;
+
+    return name;
+  };
 
   const getLocation = async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      console.log("Permission denied");
-      // Handle permission denied case
+    if (!(await LocationUtils.requestLocationPermissionsAsync())) {
+      alert("You must grant location permissions in order to use this feature");
       return;
     }
 
@@ -52,20 +63,30 @@ export default function LocationMapScreen() {
         latitudeDelta: region.latitudeDelta,
         longitudeDelta: region.longitudeDelta,
       };
-      mapViewRef.current.animateToRegion(newRegion, 2000);
+      mapViewRef.current.animateToRegion(newRegion, 1000);
     }
   };
 
   const handleSelectionButtonPress = () => {
+    setLocationNameModalVisible(true);
+  };
+
+  const save = () => {
     if (markerLocation) {
       console.log("Marker location:", markerLocation);
-      
+
       const previousScreenName = getPreviousScreenName();
       if (previousScreenName === "New Task") {
-        navigation.navigate("New Task", { location: markerLocation })
-      }
-      else if (previousScreenName === "Edit Task") {
-        navigation.navigate("Edit Task", { location: markerLocation, task: route.params.task })
+        navigation.navigate("New Task", {
+          location: markerLocation,
+          locationName: locationName,
+        });
+      } else if (previousScreenName === "Edit Task") {
+        navigation.navigate("Edit Task", {
+          location: markerLocation,
+          locationName: locationName,
+          task: route.params.task,
+        });
       }
     }
   };
@@ -73,6 +94,18 @@ export default function LocationMapScreen() {
   const handleMapPress = (event) => {
     const { coordinate } = event.nativeEvent;
     setMarkerLocation(coordinate);
+    setLocationName(
+      "Location (" + coordinate.latitude + ", " + coordinate.longitude + ")"
+    );
+  };
+
+  const handleOKButtonPress = () => {
+    if (!locationName) {
+      alert("Please enter a location name");
+      return;
+    }
+    setLocationNameModalVisible(!locationNameModalVisible);
+    save();
   };
 
   const isButtonDisabled = !markerLocation;
@@ -91,7 +124,9 @@ export default function LocationMapScreen() {
             showsPointsOfInterest={true}
             provider={PROVIDER_GOOGLE}
           >
-            {markerLocation && <Marker coordinate={markerLocation} />}
+            {markerLocation && (
+              <Marker coordinate={markerLocation} title={locationName} />
+            )}
           </MapView>
         )}
 
@@ -111,6 +146,40 @@ export default function LocationMapScreen() {
       >
         <Text style={styles.selectText}>SELECT THIS LOCATION</Text>
       </TouchableOpacity>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={locationNameModalVisible}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Enter a name for this location</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={setLocationName}
+              value={locationName}
+              placeholder={"Location Name"}
+            />
+            <TouchableOpacity
+              style={[
+                styles.selectButton,
+                {
+                  marginTop: 10,
+                  backgroundColor: "#008080",
+                  width: "30%",
+                  borderRadius: 10,
+                  borderWidth: 1,
+                  borderColor: "#fff",
+                },
+              ]}
+              onPress={handleOKButtonPress}
+            >
+              <Text style={styles.selectText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }
@@ -153,5 +222,46 @@ const styles = StyleSheet.create({
   selectText: {
     fontSize: 14,
     color: "#fff",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#008080",
+    padding: 25,
+    alignItems: "center",
+    width: "90%",
+    shadowColor: "#008080",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#008080",
+  },
+  input: {
+    height: 40,
+    width: "100%",
+    borderColor: "#008080",
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    fontSize: 16,
+    color: "#000",
   },
 });

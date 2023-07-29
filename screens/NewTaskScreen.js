@@ -13,10 +13,14 @@ import {
 } from "react-native";
 
 import { MaterialIcons, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import DatePicker, { getFormatedDate, getToday } from "react-native-modern-datepicker";
+import DatePicker, {
+  getFormatedDate,
+  getToday,
+} from "react-native-modern-datepicker";
 
 import { getAuth } from "firebase/auth";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { addLocationToGeofenceAsync } from "../utils/LocationManager";
 
 const auth = getAuth();
 const db = getFirestore();
@@ -29,32 +33,33 @@ const NewTaskScreen = ({ navigation }) => {
   const [taskName, setTaskName] = useState("");
   const [geoFenceRadius, setGeoFenceRadius] = useState(75); // Default value
   const [location, setLocation] = useState([]);
+  const [locationName, setLocationName] = useState("");
   const [isRingAlarmEnabled, setIsRingAlarmEnabled] = useState(false);
 
   const [isAnytimeEnabled, setIsAnytimeEnabled] = useState(true);
-  
+
   const [startDate, setStartDate] = useState(getToday("/"));
   const [endDate, setEndDate] = useState("");
   const [startDateModalVisible, setStartDateModalVisible] = useState(false);
   const [endDateModalVisible, setEndDateModalVisible] = useState(false);
-  
+
   const [isRepeatEnabled, setIsRepeatEnabled] = useState(false);
-  
+
   const alarmSwitch = () => {
     setIsRingAlarmEnabled((previousState) => !previousState);
   };
-  
+
   const anytimeSwitch = () => {
     setIsAnytimeEnabled((previousState) => !previousState);
   };
 
   const repeatSwitch = () => {
     setIsRepeatEnabled((previousState) => !previousState);
-  }
+  };
 
   const selectLocation = () => {
     navigation.navigate("Map");
-  }
+  };
 
   const handleSaveButton = async () => {
     if (taskName.length === 0) {
@@ -73,10 +78,11 @@ const NewTaskScreen = ({ navigation }) => {
       alert("Please select an end date.");
       return;
     }
-    
+
     const newTask = {
       taskName: taskName,
       geoFenceRadius: Number(geoFenceRadius),
+      locationName: locationName,
       location: location,
       isRingAlarmEnabled: isRingAlarmEnabled,
       isAnytimeEnabled: isAnytimeEnabled,
@@ -84,13 +90,26 @@ const NewTaskScreen = ({ navigation }) => {
       endDate: endDate,
       isRepeatEnabled: isRepeatEnabled,
       status: false,
-    }
+    };
 
-    const taskRef = await addDoc(collection(db, "users", auth.currentUser.uid, 'tasks'), newTask);
-    console.log("Task added for user: ", auth.currentUser.displayName, " with ID: ", taskRef.id);
+    const taskRef = await addDoc(
+      collection(db, "users", auth.currentUser.uid, "tasks"),
+      newTask
+    );
+    await addLocationToGeofenceAsync(
+      taskRef.id,
+      location,
+      Number(geoFenceRadius)
+    );
+    console.log(
+      "Task added for user: ",
+      auth.currentUser.displayName,
+      " with ID: ",
+      taskRef.id
+    );
     alert("Task added successfully!");
     navigation.goBack();
-  }
+  };
 
   const handleStartDateModal = () => {
     setStartDateModalVisible(!startDateModalVisible);
@@ -112,14 +131,15 @@ const NewTaskScreen = ({ navigation }) => {
     setStartDate(getToday("/"));
     setEndDate("");
   };
-  
+
   useEffect(() => {
     if (route.params?.location) {
       setLocation(route.params.location);
     }
-  }, [route.params?.location])
-
-
+    if (route.params?.locationName) {
+      setLocationName(route.params.locationName);
+    }
+  }, [route.params?.location, route.params?.locationName]);
 
   return (
     <KeyboardAvoidingView
@@ -148,10 +168,13 @@ const NewTaskScreen = ({ navigation }) => {
         <Separator />
         {/* =============================== Location Selector =============================== */}
         <View style={styles.optionContainer}>
-          <TouchableOpacity style={styles.locationButton} onPress={selectLocation}>
+          <TouchableOpacity
+            style={styles.locationButton}
+            onPress={selectLocation}
+          >
             <MaterialIcons name="place" size={24} color="#008080" />
             <Text style={[styles.infoText, { width: "80%" }]}>
-              {location.length === 0 ? "Select Location" : 'Lat: ' + location.latitude + ",\nLong: " + location.longitude}
+              {location.length === 0 ? "Select Location" : locationName}
             </Text>
             <MaterialIcons name="search" size={24} color="#808080" />
           </TouchableOpacity>
@@ -167,7 +190,13 @@ const NewTaskScreen = ({ navigation }) => {
             placeholder="75"
             placeholderTextColor="#808080"
             keyboardType="number-pad"
-            onChangeText={(text) => setGeoFenceRadius(text)}
+            onChangeText={(text) => {
+              if (text.length === 0) {
+                setGeoFenceRadius(75);
+                return;
+              }
+              setGeoFenceRadius(text);
+            }}
           />
           <Text style={[styles.infoText]}>m</Text>
           <View style={{ width: "35%" }}></View>
@@ -208,7 +237,13 @@ const NewTaskScreen = ({ navigation }) => {
 
         <Separator />
 
-        <View style={isAnytimeEnabled ? {alignItems: "center", opacity: 0} : {alignItems: "center", opacity: 1}}>
+        <View
+          style={
+            isAnytimeEnabled
+              ? { alignItems: "center", opacity: 0 }
+              : { alignItems: "center", opacity: 1 }
+          }
+        >
           <View style={styles.optionContainer}>
             <FontAwesome5 name="calendar-alt" size={24} color="#008080" />
             <Text style={[styles.infoText]}>Date Interval</Text>
@@ -309,7 +344,11 @@ const NewTaskScreen = ({ navigation }) => {
             </View>
           </Modal>
 
-          <TouchableOpacity style={styles.optionContainer} onPress={clearDates} disabled={isAnytimeEnabled}>
+          <TouchableOpacity
+            style={styles.optionContainer}
+            onPress={clearDates}
+            disabled={isAnytimeEnabled}
+          >
             <Text
               style={[
                 styles.infoText,
@@ -325,11 +364,11 @@ const NewTaskScreen = ({ navigation }) => {
             <MaterialIcons name="repeat" size={24} color="#008080" />
             <Text style={[styles.infoText]}>Repeat </Text>
             <View style={{ width: "58%" }}></View>
-            <Switch 
-            trackColor={{ false: "#808080", true: "#008080" }}
-            thumbColor={"#f4f3f4"}
-            ios_backgroundColor="#808080"
-            value={isRepeatEnabled}
+            <Switch
+              trackColor={{ false: "#808080", true: "#008080" }}
+              thumbColor={"#f4f3f4"}
+              ios_backgroundColor="#808080"
+              value={isRepeatEnabled}
             />
           </View>
 
@@ -337,7 +376,10 @@ const NewTaskScreen = ({ navigation }) => {
           {/* <View style={{ height: 50 }}></View> */}
         </View>
 
-        <TouchableOpacity style={[styles.saveButton]} onPress={handleSaveButton}>
+        <TouchableOpacity
+          style={[styles.saveButton]}
+          onPress={handleSaveButton}
+        >
           <Text style={styles.saveButtonText}>Save</Text>
         </TouchableOpacity>
       </ScrollView>

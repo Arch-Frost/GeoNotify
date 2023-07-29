@@ -19,6 +19,13 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import * as Location from "expo-location";
+import { clearBadgeCount } from "../utils/NotificationManager";
+import {
+  getDistanceFromCoords,
+  hasLocationUpdatesStartedAsync,
+  startLocationUpdatesAsync,
+} from "../utils/LocationManager";
 
 const auth = getAuth();
 const db = getFirestore();
@@ -29,6 +36,7 @@ const HomeScreen = ({ navigation }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [tasks, setTasks] = useState([]);
+  const [currentLocation, setCurrentLocation] = useState(null);
 
   const user = useAuthentication();
 
@@ -96,7 +104,22 @@ const HomeScreen = ({ navigation }) => {
         });
         setTasks(tasks);
       };
+
+      const fetchCurrentLocation = async () => {
+        const location = await Location.getCurrentPositionAsync();
+        setCurrentLocation(location);
+      };
+
+      const startLocationUpdates = async () => {
+        if (!(await hasLocationUpdatesStartedAsync())) {
+          await startLocationUpdatesAsync();
+        }
+      };
+
       fetchTasks();
+      clearBadgeCount();
+      fetchCurrentLocation();
+      startLocationUpdates();
     }, [])
   );
 
@@ -110,14 +133,14 @@ const HomeScreen = ({ navigation }) => {
     setIsSearching(true);
 
     const filtered = tasks.filter((task) => {
-      return task.name.toLowerCase().includes(query.toLowerCase());
+      return task.taskName.toLowerCase().includes(query.toLowerCase());
     });
     setFilteredTasks(filtered);
   };
 
   const handleItemSelection = (item) => {
     setSelectedTask(item);
-    console.log(item);
+    // console.log(item);
     // Pass the selected task to the next screen
     navigation.navigate("Task Details", { task: item });
     // navigation.navigate("Task Details");
@@ -133,11 +156,23 @@ const HomeScreen = ({ navigation }) => {
       <MaterialIcons name="location-on" size={34} color="red" />
       <View style={styles.taskDetails}>
         <Text style={styles.taskName}>{item.taskName}</Text>
-        <Text style={styles.taskLocation}>
-          {item?.location?.latitude + ", " + item?.location.longitude}
-        </Text>
+        <Text style={styles.taskLocation}>{item.locationName}</Text>
       </View>
-      {/* <Text style={styles.taskDistance}>{item.distance}</Text> */}
+      <Text style={styles.taskDistance}>
+        {Math.floor(
+          getDistanceFromCoords(
+            {
+              latitude: item.location?.latitude,
+              longitude: item.location?.longitude,
+            },
+            {
+              latitude: currentLocation?.coords.latitude,
+              longitude: currentLocation?.coords.longitude,
+            }
+          )
+        )}{" "}
+        m
+      </Text>
     </TouchableOpacity>
   );
 

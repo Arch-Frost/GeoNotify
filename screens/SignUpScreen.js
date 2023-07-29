@@ -13,7 +13,6 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
 
 const auth = getAuth();
 
@@ -49,7 +48,7 @@ const SignUpScreen = ({ navigation }) => {
         const user = userCredential.user;
         console.log("User created successfully");
         await updateDisplayName(name);
-        alert("Account created successfully");
+        // alert("Account created successfully");
         navigation.navigate("Login");
       })
       .catch((error) => {

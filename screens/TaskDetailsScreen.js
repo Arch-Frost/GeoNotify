@@ -12,6 +12,7 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { getAuth } from "firebase/auth";
 import { getFirestore, doc, deleteDoc, updateDoc } from "firebase/firestore";
+import { removeLocationFromGeofenceAsync } from "../utils/LocationManager";
 
 const auth = getAuth();
 const db = getFirestore();
@@ -33,12 +34,14 @@ const TaskDetailsScreen = ({ navigation }) => {
       })
       setButtonText("Mark as Completed");
       setStatus(false);
+      console.log("Task marked as pending")
     } else { // If the task is pending, set it to completed
       await updateDoc(taskRef, {
         status: true,
       })
       setButtonText("Reset");
       setStatus(true);
+      console.log("Task marked as completed")
     }
   };
 
@@ -65,6 +68,7 @@ const TaskDetailsScreen = ({ navigation }) => {
   const deleteTask = async () => {
     const docRef = doc(db, "users", auth.currentUser.uid, "tasks", task.id);
     await deleteDoc(docRef);
+    await removeLocationFromGeofenceAsync(task.id);
     navigation.goBack();
   }
 
@@ -166,11 +170,7 @@ const TaskDetailsScreen = ({ navigation }) => {
                   Within {task.geoFenceRadius} m
                 </Text>
                 <Text style={[styles.infoText, { fontSize: 18 }]}>
-                  {"Latitude: " +
-                    task.location.latitude +
-                    ",\n" +
-                    "Longitude: " +
-                    +task.location.longitude}
+                  {task.locationName}
                 </Text>
               </View>
             </View>
@@ -190,7 +190,7 @@ const TaskDetailsScreen = ({ navigation }) => {
                 )}
 
                 <Text style={[styles.infoText, { fontSize: 18, fontStyle: "italic" }]}>
-                  {task.startDate} - {task.endDate ? task.endDate : "present"}
+                  {task.startDate} - {task.endDate ? task.endDate : "No Limit"}
                 </Text>
               </View>
             </View>

@@ -17,6 +17,7 @@ import DatePicker from "react-native-modern-datepicker";
 
 import { getAuth } from "firebase/auth";
 import { getFirestore, doc, updateDoc } from "firebase/firestore";
+import { updateLocationInGeofenceAsync } from "../utils/LocationManager";
 
 const auth = getAuth();
 const db = getFirestore();
@@ -30,6 +31,7 @@ const EditTaskScreen = ({ navigation }) => {
   const [taskName, setTaskName] = useState(task.taskName);
   const [geoFenceRadius, setGeoFenceRadius] = useState(task.geoFenceRadius); // Default value
   const [location, setLocation] = useState(task.location);
+  const [locationName, setLocationName] = useState(task.locationName);
   const [isRingAlarmEnabled, setIsRingAlarmEnabled] = useState(task.isRingAlarmEnabled);
 
   const [isAnytimeEnabled, setIsAnytimeEnabled] = useState(task.isAnytimeEnabled);
@@ -80,6 +82,7 @@ const EditTaskScreen = ({ navigation }) => {
       taskName: taskName,
       geoFenceRadius: Number(geoFenceRadius),
       location: location,
+      locationName: locationName,
       isRingAlarmEnabled: isRingAlarmEnabled,
       isAnytimeEnabled: isAnytimeEnabled,
       startDate: startDate,
@@ -89,7 +92,7 @@ const EditTaskScreen = ({ navigation }) => {
 
     const taskRef = doc(db, "users", auth.currentUser.uid, "tasks", task.id);
     await updateDoc(taskRef, editedTask);
-
+    await updateLocationInGeofenceAsync(task.id, location, Number(geoFenceRadius));
     console.log("Task updated for user: ", auth.currentUser.displayName, " with ID: ", taskRef.id);
     alert("Task Updated successfully!");
     navigation.popToTop();
@@ -120,7 +123,10 @@ const EditTaskScreen = ({ navigation }) => {
     if (route.params?.location) {
       setLocation(route.params.location);
     }
-  }, [route.params?.location])
+    if (route.params?.locationName) {
+      setLocationName(route.params.locationName);
+    }
+  }, [route.params?.location, route.params?.locationName])
 
 
 
@@ -154,7 +160,7 @@ const EditTaskScreen = ({ navigation }) => {
           <TouchableOpacity style={styles.locationButton} onPress={selectLocation}>
             <MaterialIcons name="place" size={24} color="#008080" />
             <Text style={[styles.infoText, { width: "80%" }]}>
-              {location.length === 0 ? "Select Location" : 'Lat: ' + location.latitude + ",\nLong: " + location.longitude}
+              {location.length === 0 ? "Select Location" : locationName}
             </Text>
             <MaterialIcons name="search" size={24} color="#808080" />
           </TouchableOpacity>
