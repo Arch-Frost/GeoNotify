@@ -33,6 +33,10 @@ const SignUpScreen = ({ navigation }) => {
       alert("Please fill out all fields");
       return;
     }
+    if (!validateEmail(email)) {
+      alert("Please enter a valid email");
+      return;
+    }
     if (passwordOne !== passwordTwo) {
       alert("Passwords do not match");
       return;
@@ -68,6 +72,12 @@ const SignUpScreen = ({ navigation }) => {
 
   const loginLink = () => {
     navigation.navigate("Login");
+  };
+
+  const validateEmail = (email) => {
+    return email.match(
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
   };
 
   return (

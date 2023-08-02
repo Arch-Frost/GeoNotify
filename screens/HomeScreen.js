@@ -159,25 +159,34 @@ const HomeScreen = ({ navigation }) => {
         <Text style={styles.taskLocation}>{item.locationName}</Text>
       </View>
       <Text style={styles.taskDistance}>
-        {Math.floor(
-          getDistanceFromCoords(
-            {
-              latitude: item.location?.latitude,
-              longitude: item.location?.longitude,
-            },
-            {
-              latitude: currentLocation?.coords.latitude,
-              longitude: currentLocation?.coords.longitude,
-            }
+        {convertDistanceToDisplay(
+          Math.floor(
+            getDistanceFromCoords(
+              {
+                latitude: item.location?.latitude,
+                longitude: item.location?.longitude,
+              },
+              {
+                latitude: currentLocation?.coords.latitude,
+                longitude: currentLocation?.coords.longitude,
+              }
+            )
           )
-        )}{" "}
-        m
+        )}
       </Text>
     </TouchableOpacity>
   );
 
   const addTask = () => {
     navigation.navigate("New Task");
+  };
+
+  const convertDistanceToDisplay = (distance) => {
+    if (distance < 1000) {
+      return `${distance} m`;
+    } else {
+      return `${(distance / 1000).toFixed(1)} km`;
+    }
   };
 
   return (

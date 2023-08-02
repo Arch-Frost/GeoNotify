@@ -475,7 +475,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   radiusInput: {
-    width: 30,
+    width: 35,
     borderBottomWidth: 1,
     borderColor: "#008080", // Teal
     paddingHorizontal: 5,

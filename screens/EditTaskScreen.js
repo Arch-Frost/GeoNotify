@@ -173,10 +173,17 @@ const EditTaskScreen = ({ navigation }) => {
           <Text style={[styles.infoText]}>Geofence Radius: </Text>
           <TextInput
             style={styles.radiusInput}
-            placeholder="75"
+            placeholder={geoFenceRadius.toString()}
             placeholderTextColor="#808080"
             keyboardType="number-pad"
-            onChangeText={(text) => setGeoFenceRadius(text)}
+            value={geoFenceRadius.toString()}
+            onChangeText={(text) => {
+              if (text.length === 0) {
+                setGeoFenceRadius(75);
+                return;
+              }
+              setGeoFenceRadius(text);
+            }}
           />
           <Text style={[styles.infoText]}>m</Text>
           <View style={{ width: "35%" }}></View>
@@ -442,7 +449,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   radiusInput: {
-    width: 30,
+    width: 35,
     borderBottomWidth: 1,
     borderColor: "#008080", // Teal
     paddingHorizontal: 5,
