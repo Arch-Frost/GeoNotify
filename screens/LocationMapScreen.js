@@ -136,6 +136,7 @@ export default function LocationMapScreen() {
           </View>
         </TouchableOpacity>
       </View>
+      
       <TouchableOpacity
         style={[
           styles.selectButton,

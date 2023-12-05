@@ -1,4 +1,5 @@
 import * as Location from "expo-location";
+import { getAllTasks } from "./FirestoreManager";
 
 const BACKGROUND_LOCATION_TASK = "BACKGROUND-LOCATION-TASK";
 const BACKGROUND_GEOFENCING_TASK = "BACKGROUND-GEOFENCING-TASK";
@@ -63,7 +64,12 @@ export function getDistanceFromCoords(location1, location2) {
 
 export async function getDistanceFromCurrentLocationAsync(location) {
   const currentLocation = await Location.getCurrentPositionAsync();
-  const distance = getDistance(currentLocation.coords.latitude, currentLocation.coords.longitude, location.latitude, location.longitude);
+  const distance = getDistance(
+    currentLocation.coords.latitude,
+    currentLocation.coords.longitude,
+    location.latitude,
+    location.longitude
+  );
   return distance;
 }
 
@@ -94,4 +100,18 @@ export async function updateLocationInGeofenceAsync(
   await removeLocationFromGeofenceAsync(locationId);
   await addLocationToGeofenceAsync(locationId, location, radius);
   console.log("Updated monitoring geofence for: ", locationId);
+}
+
+export async function startAllRegisteredGeofencesAsync() {
+  const tasks = await getAllTasks();
+  tasks.forEach(async (task) => {
+    if (task.status) {
+      await addLocationToGeofenceAsync(
+        task.id,
+        task.location,
+        task.geofenceRadius
+      );
+    }
+  });
+  console.log("Started monitoring all geofences");
 }

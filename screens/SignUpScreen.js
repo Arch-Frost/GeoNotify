@@ -52,6 +52,7 @@ const SignUpScreen = ({ navigation }) => {
         const user = userCredential.user;
         console.log("User created successfully");
         await updateDisplayName(name);
+        
         // alert("Account created successfully");
         navigation.navigate("Login");
       })

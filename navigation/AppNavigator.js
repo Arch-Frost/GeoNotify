@@ -11,7 +11,6 @@ const Stack = createStackNavigator();
 export default function AppNavigator() {
   const user = useAuthentication();
   
-
   return (
     <NavigationContainer>
       <Stack.Navigator>

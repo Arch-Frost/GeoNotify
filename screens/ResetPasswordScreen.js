@@ -6,7 +6,11 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
-import { getAuth, sendPasswordResetEmail, fetchSignInMethodsForEmail } from "firebase/auth";
+import {
+  getAuth,
+  sendPasswordResetEmail,
+  fetchSignInMethodsForEmail,
+} from "firebase/auth";
 
 const auth = getAuth();
 
@@ -139,10 +143,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 20,
   },
-    error: {
+  error: {
     color: "red",
     fontSize: 14,
     fontWeight: "bold",
-    
-    }
+  },
 });

@@ -25,6 +25,7 @@ import {
   getDistanceFromCoords,
   hasLocationUpdatesStartedAsync,
   startLocationUpdatesAsync,
+  startAllRegisteredGeofencesAsync
 } from "../utils/LocationManager";
 
 const auth = getAuth();
@@ -106,6 +107,10 @@ const HomeScreen = ({ navigation }) => {
       };
 
       const fetchCurrentLocation = async () => {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          return;
+        }
         const location = await Location.getCurrentPositionAsync();
         setCurrentLocation(location);
       };
@@ -122,6 +127,13 @@ const HomeScreen = ({ navigation }) => {
       startLocationUpdates();
     }, [])
   );
+
+  useEffect(() => {
+    const startGeofences = async () => {
+      await startAllRegisteredGeofencesAsync();
+    }
+    startGeofences();
+  }, []);
 
   const handleSearch = (query) => {
     setSearchQuery(query);

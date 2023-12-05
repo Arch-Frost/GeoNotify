@@ -1,5 +1,5 @@
 import { getAuth } from "firebase/auth";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, getDocs, collection } from "firebase/firestore";
 
 const auth = getAuth();
 const db = getFirestore();
@@ -12,4 +12,14 @@ export const getTaskDetails = async (taskId) => {
     } else {
         return null;
     }
+}
+
+export const getAllTasks = async () => {
+    const tasks = [];
+    const query = collection(db, "users", auth.currentUser.uid, "tasks");
+    const querySnapshot = await getDocs(query);
+    querySnapshot.forEach((doc) => {
+        tasks.push({ ...doc.data(), id: doc.id });
+    });
+    return tasks;
 }

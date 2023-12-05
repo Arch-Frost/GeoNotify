@@ -8,7 +8,7 @@ import * as Notifications from "expo-notifications";
 import { addBadgeCount } from "./utils/NotificationManager";
 import "./config/firebase";
 import AppNavigator from "./navigation/AppNavigator";
-import { requestLocationPermissionsAsync, startLocationUpdatesAsync, getDistanceFromCurrentLocationAsync } from "./utils/LocationManager";
+import { requestLocationPermissionsAsync, startLocationUpdatesAsync, getDistanceFromCurrentLocationAsync, startAllRegisteredGeofencesAsync } from "./utils/LocationManager";
 import { requestNotificationPermissionsAsync } from "./utils/NotificationManager";
 import { getTaskDetails } from "./utils/FirestoreManager";
 
@@ -39,8 +39,7 @@ TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error }) => {
   }
 });
 
-TaskManager.defineTask(
-  BACKGROUND_LOCATION_TASK,
+TaskManager.defineTask(BACKGROUND_LOCATION_TASK,
   ({ data: { locations }, error }) => {
     if (error) {
       // Error occurred - check `error.message` for more details.
@@ -51,8 +50,7 @@ TaskManager.defineTask(
   }
 );
 
-TaskManager.defineTask(
-  BACKGROUND_GEOFENCING_TASK,
+TaskManager.defineTask(BACKGROUND_GEOFENCING_TASK,
   async ({ data: { eventType, region }, error }) => {
     if (error) {
       // Error occurred - check `error.message` for more details.
@@ -78,8 +76,9 @@ TaskManager.defineTask(
 
 Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
 
+
 export default function App() {
-  useEffect( () => {
+  useEffect(() => {
     const backgroundLocationTask = async () => {
       await requestLocationPermissionsAsync();
       await requestNotificationPermissionsAsync();
@@ -87,9 +86,11 @@ export default function App() {
     const backgroundNotificationTask = async () => {
       await startLocationUpdatesAsync();
     }
+
     backgroundLocationTask();
     backgroundNotificationTask();
   }, []);
+  
   return (
     <>
       <AppNavigator />
