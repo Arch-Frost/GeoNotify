@@ -16,7 +16,7 @@ export const getTaskDetails = async (taskId) => {
 
 export const getAllTasks = async () => {
     const tasks = [];
-    const query = collection(db, "users", auth.currentUser.uid, "tasks");
+    const query = collection(db, "users", (auth.currentUser.uid || 0), "tasks");
     const querySnapshot = await getDocs(query);
     querySnapshot.forEach((doc) => {
         tasks.push({ ...doc.data(), id: doc.id });

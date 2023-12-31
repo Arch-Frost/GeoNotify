@@ -13,7 +13,7 @@ import {
 } from "react-native";
 
 import { MaterialIcons, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import DatePicker from "react-native-modern-datepicker";
+import DatePicker, { getToday } from "react-native-modern-datepicker";
 
 import { getAuth } from "firebase/auth";
 import { getFirestore, doc, updateDoc } from "firebase/firestore";

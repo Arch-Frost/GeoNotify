@@ -97,20 +97,33 @@ export async function updateLocationInGeofenceAsync(
   location,
   radius
 ) {
-  await removeLocationFromGeofenceAsync(locationId);
-  await addLocationToGeofenceAsync(locationId, location, radius);
-  console.log("Updated monitoring geofence for: ", locationId);
+  await removeLocationFromGeofenceAsync(locationId).then(() => {
+    console.log("Removed monitoring geofence for: ", locationId);
+  }
+  ).catch((error) => {
+    console.log("Error removing geofence: ", error.message);
+  });
+  
+  await addLocationToGeofenceAsync(locationId, location, Number(radius)).then(() => {
+    console.log("Added monitoring geofence for: ", locationId);
+  }).catch((error) => {
+    console.log("Error adding geofence: ", error.message);
+  });
 }
 
 export async function startAllRegisteredGeofencesAsync() {
   const tasks = await getAllTasks();
   tasks.forEach(async (task) => {
-    if (task.status) {
+    if (!task.status) {
       await addLocationToGeofenceAsync(
         task.id,
         task.location,
-        task.geofenceRadius
-      );
+        task.geofenceRadius || 75
+      ).then(() => {
+        console.log("Added monitoring geofence for: ", task.id);
+      }).catch((err) => {
+        console.log("Error adding geofence: ", err.message)
+      });
     }
   });
   console.log("Started monitoring all geofences");

@@ -8,9 +8,14 @@ import * as Notifications from "expo-notifications";
 import { addBadgeCount } from "./utils/NotificationManager";
 import "./config/firebase";
 import AppNavigator from "./navigation/AppNavigator";
-import { requestLocationPermissionsAsync, startLocationUpdatesAsync, getDistanceFromCurrentLocationAsync, startAllRegisteredGeofencesAsync } from "./utils/LocationManager";
+import {
+  requestLocationPermissionsAsync,
+  startLocationUpdatesAsync,
+  getDistanceFromCurrentLocationAsync,
+  startAllRegisteredGeofencesAsync,
+} from "./utils/LocationManager";
 import { requestNotificationPermissionsAsync } from "./utils/NotificationManager";
-import { getTaskDetails } from "./utils/FirestoreManager";
+import { getAllTasks, getTaskDetails } from "./utils/FirestoreManager";
 
 const BACKGROUND_NOTIFICATION_TASK = "BACKGROUND-NOTIFICATION-TASK";
 const BACKGROUND_LOCATION_TASK = "BACKGROUND-LOCATION-TASK";
@@ -39,14 +44,21 @@ TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error }) => {
   }
 });
 
-TaskManager.defineTask(BACKGROUND_LOCATION_TASK,
+TaskManager.defineTask(
+  BACKGROUND_LOCATION_TASK,
   ({ data: { locations }, error }) => {
     if (error) {
       // Error occurred - check `error.message` for more details.
       console.log("Error in background location task: ", error.message);
       return;
     }
-    console.log("Received new locations\n", "Latitude: ", locations[0].coords.latitude, "Longitude: ", locations[0].coords.longitude);
+    console.log(
+      "Received new locations\n",
+      "Latitude: ",
+      locations[0].coords.latitude,
+      "Longitude: ",
+      locations[0].coords.longitude
+    );
   }
 );
 
@@ -70,27 +82,26 @@ TaskManager.defineTask(BACKGROUND_GEOFENCING_TASK,
         });
         addBadgeCount();
       }
-    } 
+    }
   }
 );
 
 Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
-
 
 export default function App() {
   useEffect(() => {
     const backgroundLocationTask = async () => {
       await requestLocationPermissionsAsync();
       await requestNotificationPermissionsAsync();
-    }
+    };
     const backgroundNotificationTask = async () => {
       await startLocationUpdatesAsync();
-    }
+    };
 
     backgroundLocationTask();
     backgroundNotificationTask();
   }, []);
-  
+
   return (
     <>
       <AppNavigator />

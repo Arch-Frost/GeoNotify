@@ -25,7 +25,7 @@ import {
   getDistanceFromCoords,
   hasLocationUpdatesStartedAsync,
   startLocationUpdatesAsync,
-  startAllRegisteredGeofencesAsync
+  startAllRegisteredGeofencesAsync,
 } from "../utils/LocationManager";
 
 const auth = getAuth();
@@ -130,8 +130,14 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     const startGeofences = async () => {
-      await startAllRegisteredGeofencesAsync();
-    }
+      await startAllRegisteredGeofencesAsync()
+        .then(() => {
+          console.log("Started monitoring all geofences");
+        })
+        .catch((err) => {
+          console.log("Error starting geofences: ", err.message);
+        });
+    };
     startGeofences();
   }, []);
 

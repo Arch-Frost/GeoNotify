@@ -22,7 +22,7 @@ const TaskDetailsScreen = ({ navigation }) => {
   const task = route.params.task;
 
   const [status, setStatus] = useState(task.status); // ['Pending', 'Completed']
-  const [buttonText, setButtonText] = useState("Mark as Completed"); // ['Mark as Completed', 'Mark as Pending']
+  const [buttonText, setButtonText] = useState(task.status ? "Reset" : "Mark as Completed"); 
 
   const handleStatusChange = async () => {
     // Handle changing the task status
@@ -68,7 +68,11 @@ const TaskDetailsScreen = ({ navigation }) => {
   const deleteTask = async () => {
     const docRef = doc(db, "users", auth.currentUser.uid, "tasks", task.id);
     await deleteDoc(docRef);
-    await removeLocationFromGeofenceAsync(task.id);
+    await removeLocationFromGeofenceAsync(task.id).then(() => {
+      console.log("Removed monitoring geofence for: ", task.id);
+    }).catch((error) => {
+      console.log("Error removing monitoring geofence for: ", task.id);
+    });
     navigation.goBack();
   }
 
