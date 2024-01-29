@@ -6,6 +6,36 @@ GeoNotify is a location-based reminder application built using React Native. It 
 ## Features
 
 - Location-Based Reminders
+- User Authentication and Profiles
+- Customizable Reminders
 - Intuitive User Interface
 - Notification Alerts
-- Customizable Reminders
+- Reminder Scheduling
+- Offline Support
+
+## Installation
+
+Clone the project
+
+```bash
+  git clone https://github.com/Arch-Frost/GeoNotify.git
+```
+
+Go to the project directory
+
+```bash
+  cd GeoNotify
+```
+
+Install dependencies
+
+```bash
+  npm install
+```
+
+Start the server
+
+```bash
+  npm start
+```
+
